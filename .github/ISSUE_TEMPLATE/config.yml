@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: 💬 提问 / 讨论
+    url: https://github.com/ClassroomTools/ClassroomTools/discussions
+    about: 有疑问或想讨论？请使用 Discussions（如未开启，请在 Issue 中提问）
+  - name: 📖 Vibe Coding 是什么？
+    url: https://github.com/features/copilot
+    about: 了解 GitHub Copilot 和 AI 辅助编程
+  - name: 🤝 贡献指南
+    url: https://github.com/ClassroomTools/ClassroomTools/blob/main/CONTRIBUTING.md
+    about: 提交代码前请先阅读贡献指南

@@ -1,0 +1,28 @@
+---
+name: 🧩 领取开发任务
+about: 从 DesignGuide 中挑选一个模块开始编码
+title: "[Task] "
+labels: ["good first issue"]
+assignees: []
+---
+
+## 🧩 任务描述
+
+<!-- 你要实现 DesignGuide 中的哪个功能？例如："发言均衡模块-学生名单左栏" -->
+
+
+## 📖 参考 DesignGuide 章节
+
+<!-- 如：2.3 界面布局 - 左栏（学生名单） -->
+
+
+## ✅ 验收标准
+
+<!-- 完成后应满足的条件 -->
+- [ ] 功能符合 DesignGuide 描述
+- [ ] 数据存入 localStorage
+- [ ] 刷新页面数据不丢失
+
+## 🔗 相关
+
+<!-- 关联的其他 Issue 或 PR -->
