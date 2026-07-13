@@ -1,135 +1,175 @@
 # 📚 课堂管理助手 (ClassroomTools)
 
-**此项目仅作为非专业开发人员的AI编程学习项目，请勿作为生产力用途**
-
-
-> 🎓 一个面向 Vibe Coding 初学者的开源协作项目 — 边做边学，用 AI 辅助编程构建实用课堂工具。
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+> ⚠️ **此项目仅作为非专业开发人员的 AI 编程学习项目，请勿用于生产力用途。**
+> ⚠️ **如想学习请自行 FORK 引用到自己的 Github 中，提交 PULL REQUEST 或 ISSUE 不一定会同意并处理**
 
 ---
 
-## 🎯 项目简介
+## 🎯 这是什么？
 
-**课堂管理助手** 是一个单页 HTML 应用，集成两项教师日常使用的教育辅助功能：
+**课堂管理助手** 是一个面向教师的 Web 辅助工具，集成多项课堂管理功能。它同时也是专为 **Vibe Coding 初学者** 设计的开源协作项目 —— 你不需要有编程经验，用自然语言描述需求，AI 帮你写代码。
 
-| 功能 | 说明 |
-|------|------|
-| 🗣️ **发言均衡热力图** | 可视化追踪学生课堂发言次数，识别参与度不均，促进课堂公平 |
-| 👥 **智能分层分组器** | 根据性别和成绩层级自动分组，保证每组均衡 |
+### 包含的功能模块
 
-### ✨ 特点
-- 🌐 **纯前端**：单个 HTML 文件即可运行，无需服务器
-- 💾 **本地存储**：数据保存在浏览器 `localStorage`，离线可用
-- 🎨 **直观交互**：热力图、卡片式布局，视觉反馈丰富
+| 模块 | 解决什么问题 |
+|------|-------------|
+| 🗣️ **发言均衡热力图** | 追踪学生发言次数，用颜色可视化参与度，识别被忽略或过度提问的学生 |
+| 👥 **智能分层分组器** | 按性别 + 成绩等级自动均匀分组，告别手动排座位的痛苦 |
+
+> 📖 完整的功能细节、数据模型、交互逻辑见 **[DesignGuide.md](./DesignGuide.md)**。
 
 ---
 
-## 🧭 项目目标
+## 🏗️ 技术全景
 
-这个项目不仅仅是构建一个工具，更重要的是：
+| 层面 | 技术选择 | 为什么这样选 |
+|------|---------|-------------|
+| 🖥️ 前端 | HTML + CSS + JavaScript | 零门槛，浏览器就能跑 |
+| 🎨 UI | Bootstrap（离线引入） | 不用手写样式，快速出界面 |
+| 🔧 后端 | PHP | 语法简单，部署方便，适合新手 |
+| 💾 存储 | localStorage + 后端数据库 | 前端临时缓存 + 服务端持久化 |
+| 🔐 运行环境 | NGINX + WAF | 已有安全防护，无需在代码层面过度考虑 |
 
-1. **学习 Vibe Coding** — 体验用 AI 辅助编程的方式，从设计稿到可运行代码
-2. **学习 Git & GitHub 协作** — 掌握 Issue、Pull Request、Code Review 等开源协作流程
-3. **贡献开源** — 从第一个 PR 开始，成为开源社区的参与者
+### 设计原则
 
-> 💡 **Vibe Coding** 是一种借助 AI 编程助手（如 GitHub Copilot）进行自然语言驱动的编程方式。你描述需求，AI 帮你实现。
+- 🧒 **极简至上**：代码能跑就行，不求工业级优雅
+- 🚫 **不防御性编程**：不过度校验、不处理极端边界
+- 🔓 **不纠结安全**：运行环境已有 WAF + NGINX 防护
+- 👥 **不过度考虑并发**：面向单个班级使用场景
+
+---
+
+## 🔑 核心设计概念
+
+### 账号体系
+
+每位教师拥有独立账号，数据按账号隔离。
+
+### 多班级 & 房间号
+
+类似 Kahoot! 的房间机制：
+- 教师创建一个"班级"，系统生成 **6 位数字房间号**
+- 将房间号告诉学生，学生即可加入该班级
+- 不同班级之间数据完全隔离
+
+```
+教师创建班级 → 生成房间号 482951 → 分享给学生 → 学生凭房间号加入
+```
+
+---
+
+## 🧭 你为什么要参与？
+
+这个项目的真正目标 **不是做出一个完美的软件**，而是：
+
+| 序号 | 你要学什么 | 怎么学 |
+|------|-----------|--------|
+| 1 | **Vibe Coding** | 用自然语言向 Copilot 描述需求，AI 生成代码，你验证调优 |
+| 2 | **Git & GitHub** | 从 Fork 到 Pull Request，走一遍开源协作全流程 |
+| 3 | **前后端协作** | 理解浏览器 ↔ 服务器是如何配合工作的 |
+| 4 | **看懂设计文档** | `DesignGuide.md` 就是你的"产品需求文档" |
+
+> 💡 **Vibe Coding** = 用对话的方式编程。你告诉 AI 要什么，AI 写代码，你负责测试和把关。
 
 ---
 
 ## 🚀 快速开始
 
-### 环境要求
-- 一台能上网的电脑
-- 一个文本编辑器（推荐 [VS Code](https://code.visualstudio.com/)）
+### 你只需要
+
+- 一台电脑（Windows / macOS / Linux 都行）
+- [VS Code](https://code.visualstudio.com/)（推荐，带 Copilot 更好）
 - 一个 GitHub 账号
+- PHP 运行环境（[XAMPP](https://www.apachefriends.org/) 或 [MAMP](https://www.mamp.info/) 一键安装）
 
-### 加入项目
+### 三步上手
+
 ```bash
-# 1. 克隆仓库
+# 1. 克隆项目
 git clone https://github.com/YOUR_USERNAME/ClassroomTools.git
-
-# 2. 进入目录
 cd ClassroomTools
 
-# 3. 阅读设计文档
-cat DesignGuide.md
+# 2. 阅读设计文档（从这里开始！）
+# 打开 DesignGuide.md
+
+# 3. 挑选任务，开始 Vibe Coding！
+# 浏览 Issues 页面，找 good first issue 标签
 ```
 
 ---
 
-## 📁 项目结构
+## 📁 项目结构（设计阶段）
 
 ```
 ClassroomTools/
-├── DesignGuide.md      # 🎯 完整设计文档（起点！）
-├── CONTRIBUTING.md     # 🤝 贡献指南（含 Vibe Coding 教程）
-├── CODE_OF_CONDUCT.md  # 📜 行为准则
-├── README.md           # 📖 项目说明
-├── LICENSE             # ⚖️ MIT 开源协议
-└── .github/            # 🔧 Issue/PR 模板
+├── DesignGuide.md          # 🎯 完整设计文档 — 所有开发的起点
+├── CONTRIBUTING.md         # 🤝 贡献指南 + Vibe Coding 实操教程
+├── CODE_OF_CONDUCT.md      # 📜 社区行为准则
+├── README.md               # 📖 本文件
+├── LICENSE                 # ⚖️ MIT 开源协议
+└── .github/                # 🔧 Issue/PR 模板
+    ├── ISSUE_TEMPLATE/     #    Bug / 功能 / 文档 / 任务 四种模板
+    └── PULL_REQUEST_TEMPLATE.md
 ```
 
-> 💡 **当前阶段**：设计大纲阶段。`DesignGuide.md` 是项目的蓝图，代码实现将通过社区协作逐步完成。
+> 💡 **当前阶段**：设计大纲阶段。`DesignGuide.md` 是蓝图，目录结构将随开发推进逐步生长。
 
 ---
 
-## 🎓 适合谁？
+## 👥 适合谁？
 
-| 角色 | 你能学到什么 |
-|------|------------|
-| 🐣 **编程新手** | HTML/CSS/JS 基础、DOM 操作、localStorage |
-| 🐥 **有一定基础** | 模块化设计、算法思维、UI/UX 设计 |
-| 🐔 **想学协作** | Git 工作流、Issue/PR、Code Review |
-| 🦊 **想体验 AI 编程** | 用 Copilot 写代码、Prompt 工程、Vibe Coding |
+| 你的情况 | 收获 |
+|----------|------|
+| 🐣 零编程基础 | 第一次用 AI 写出能跑的代码，理解 HTML/CSS/JS/PHP 基础 |
+| 🐥 写过一点代码 | 模块化思维、简单算法、前后端数据交互 |
+| 🐔 想学团队协作 | Git 工作流、Issue/PR/Code Review 完整实践 |
+| 🦊 想提升 AI 编程效率 | Prompt 工程技巧、AI 辅助调试策略 |
 
 ---
 
-## 🤝 如何参与
+## 🤝 参与方式
 
-我们热烈欢迎任何形式的贡献！请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解详细流程。
-
-### 参与步骤速览
 1. 🍴 **Fork** 本仓库
-2. 🌿 创建你的功能分支 (`git checkout -b feature/amazing-feature`)
-3. ✍️ 编写代码
-4. ✅ 提交 commit (`git commit -m '添加了某个很棒的功能'`)
-5. 📤 推送到分支 (`git push origin feature/amazing-feature`)
-6. 🔀 发起 **Pull Request**
+2. 🔍 找一个 [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A"good+first+issue")
+3. 💬 在 Issue 下留言 "我来做这个"
+4. 🌿 创建分支 → 用 Copilot 写代码 → 浏览器测试 → 提交 PR
+5. 🎉 等待 Review，合并后你就正式成为贡献者了！
 
-### 适合新手的好问题
-查看标有 [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A"good+first+issue") 标签的 Issue，这些是专门为新手准备的任务。
+详细流程见 **[CONTRIBUTING.md](./CONTRIBUTING.md)**。
 
 ---
 
-## 📋 任务看板
+## 🗺️ Vibe Coding 学习路径
 
-项目进度和待办事项通过 [GitHub Issues](../../issues) 和 [Projects](../../projects) 管理。
+```
+阅读 DesignGuide.md       挑选 good first issue      用 Copilot 写代码
+      ↓                          ↓                        ↓
+  理解要做什么              认领一个小任务           自然语言描述需求
+                                                           ↓
+      ┌───────────────────────────────────────────────────┐
+      │           🔄  迭代循环：写 → 测 → 改 → 再测       │
+      └───────────────────────────────────────────────────┘
+                           ↓
+                    提交 Pull Request
+                           ↓
+                    Code Review & 合并 🎉
+```
 
 ---
 
-## 🧑‍🏫 Vibe Coding 学习路径
+## ⚠️ 重要声明
 
-如果你是第一次接触 Vibe Coding，建议按以下顺序学习：
-
-1. 📖 阅读 `DesignGuide.md`，理解项目设计
-2. 🗣️ 挑选一个 `good first issue`，用自然语言向 Copilot 描述你想实现的功能
-3. 🔄 迭代优化：运行 → 看效果 → 提修改 → 再运行
-4. 🙋 遇到问题？在 Issue 中提问，社区会帮助你
+- ❌ **请勿用于生产环境**：这是一个学习项目，代码质量、安全性、稳定性均未达到生产标准。
+- 🧪 **实验性质**：项目运行在专门的实验虚拟服务器上，由 NGINX + WAF 提供基础防护。
+- 🎓 **学习优先**：代码的可读性和简单性优先于性能和安全性。
 
 ---
 
 ## 📄 许可证
 
-本项目采用 [MIT License](./LICENSE) 开源协议。你可以自由使用、修改和分发本项目代码。
+MIT License — 详见 [LICENSE](./LICENSE)。
 
 ---
 
-## 🙏 致谢
+> ⭐ 如果这个项目帮到了你，点个 Star 让更多人看到吧！
 
-感谢每一位贡献者和学习者，一起让编程变得更有趣、更 accessible！
-
----
-
-> 🌟 **提示**：如果你觉得这个项目对你有帮助，请给个 Star ⭐ 支持一下！
