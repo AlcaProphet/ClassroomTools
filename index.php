@@ -42,7 +42,7 @@ require_once __DIR__ . '/includes/header.php';
         </p>
 
         <!-- 学生进入表单 -->
-        <form id="studentEntryForm" action="pages/student/view.php" method="GET">
+        <form id="studentEntryForm" action="pages/student/view.php" method="POST">
           <div class="mb-3">
             <label for="classCode" class="form-label">班级号</label>
             <input
