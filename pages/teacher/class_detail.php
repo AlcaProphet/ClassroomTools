@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
     $lines = preg_split('/\r\n|\r|\n/', trim($content));
     
     // 第一行是标题行，跳过
-    $header = str_getcsv(array_shift($lines) ?? '');
+    $header = str_getcsv(array_shift($lines) ?? '', ',', '"', '\\');
     
     // 统计
     $imported = 0;
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
         $line = trim($line);
         if ($line === '') continue;
 
-        $row = str_getcsv($line);
+        $row = str_getcsv($line, ',', '"', '\\');
         if (count($row) < 2) {
           $skipped++;
           continue; // 跳过空行或格式不对的行

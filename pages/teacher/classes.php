@@ -18,6 +18,15 @@ if (!isTeacherLoggedIn()) {
 $db = getDB();
 $teacherId = getCurrentTeacherId();
 
+// 验证 Session 中的教师 ID 在数据库中仍然有效（防止教师被清理后 Session 残留）
+$stmt = $db->prepare("SELECT id FROM teachers WHERE id = ?");
+$stmt->execute([$teacherId]);
+if (!$stmt->fetch()) {
+  // Session 中的教师已不存在，清除 Session 并重新登录
+  session_destroy();
+  redirect('login.php');
+}
+
 $message = '';
 $messageType = 'info';  // success | danger | info
 

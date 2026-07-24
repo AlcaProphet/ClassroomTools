@@ -56,10 +56,26 @@ function redirect(string $url): void {
 }
 
 /**
- * 检查教师是否已登录
+ * 检查教师是否已登录（同时验证 Session 中的教师 ID 在数据库中真实存在）
  */
 function isTeacherLoggedIn(): bool {
-  return isset($_SESSION['teacher_id']);
+  if (!isset($_SESSION['teacher_id'])) {
+    return false;
+  }
+  // 验证教师记录未被删除（防止清理数据后 Session 残留导致外键错误）
+  try {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id FROM teachers WHERE id = ?");
+    $stmt->execute([$_SESSION['teacher_id']]);
+    if (!$stmt->fetch()) {
+      // 教师已被删除，清除无效 Session
+      session_destroy();
+      return false;
+    }
+  } catch (Exception $e) {
+    return false;
+  }
+  return true;
 }
 
 /**
