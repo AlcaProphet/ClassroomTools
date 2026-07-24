@@ -210,6 +210,10 @@ require_once __DIR__ . '/../../includes/header.php';
                     <a href="speak.php?class_id=<?php echo $class['id']; ?>" class="btn btn-outline-success btn-sm">
                       🗣️ 发言
                     </a>
+                    <!-- 智能分组 -->
+                    <a href="group.php?class_id=<?php echo $class['id']; ?>" class="btn btn-outline-info btn-sm">
+                      👥 分组
+                    </a>
                     <!-- 进入班级 -->
                     <a href="class_detail.php?id=<?php echo $class['id']; ?>" class="btn btn-outline-primary btn-sm">
                       名单
