@@ -7,9 +7,9 @@
   </footer>
 
   <!-- Bootstrap 5 JS 依赖（离线引入） -->
-  <script src="assets/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="/assets/bootstrap/bootstrap.bundle.min.js"></script>
 
   <!-- 自定义 JavaScript -->
-  <script src="assets/js/app.js"></script>
+  <script src="/assets/js/app.js"></script>
 </body>
 </html>
