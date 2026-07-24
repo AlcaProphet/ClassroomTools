@@ -124,17 +124,25 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
       </div>
 
-      <!-- 右栏：热力图 -->
+      <!-- 右栏：排行榜 -->
       <div class="col-lg-6">
+        <!-- 排行榜一：学生发言榜 -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">🏆 学生发言排行榜</h5>
+          </div>
+          <div class="card-body p-0" id="studentRankArea">
+            <div class="text-center py-5 text-muted">加载中...</div>
+          </div>
+        </div>
+
+        <!-- 排行榜二：小组发言榜 -->
         <div class="card">
           <div class="card-header">
-            <h5 class="mb-0">🔥 热力图（按发言次数排列）</h5>
+            <h5 class="mb-0">👥 小组发言排行榜</h5>
           </div>
-          <div class="card-body" id="heatmapArea">
-            <div class="text-center py-5 text-muted" id="heatmapEmpty">
-              加载中...
-            </div>
-            <div id="heatmapGrid" class="d-flex flex-wrap gap-2"></div>
+          <div class="card-body p-0" id="groupRankArea">
+            <div class="text-center py-5 text-muted">加载中...</div>
           </div>
         </div>
       </div>
@@ -225,6 +233,7 @@ const CLASS_ID = <?php echo $classId; ?>;
 // ========== 页面加载时获取数据 ==========
 document.addEventListener('DOMContentLoaded', () => {
   loadSpeakData();
+  loadGroupRanking();
 });
 
 // ========== 加载发言数据 ==========
@@ -251,58 +260,114 @@ async function loadSpeakData() {
       ? `${data.stats.max_student.name} (${data.stats.max_student.speak_count}次)`
       : '-';
 
-    // 更新热力图
-    renderHeatmap(data.students);
+    // 渲染学生排行榜
+    renderStudentRanking(data.students);
   } catch (e) {
     console.error('加载发言数据失败:', e);
   }
 }
 
-// ========== 渲染热力图 ==========
-function renderHeatmap(students) {
-  const grid = document.getElementById('heatmapGrid');
-  const empty = document.getElementById('heatmapEmpty');
+// ========== 渲染学生排行榜（降序：发言多的在前） ==========
+function renderStudentRanking(students) {
+  const area = document.getElementById('studentRankArea');
   if (!students.length) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    empty.textContent = '暂无学生数据';
+    area.innerHTML = '<div class="text-center py-5 text-muted">暂无学生数据</div>';
     return;
   }
-  empty.style.display = 'none';
 
-  // 按发言次数从低到高排序
-  const sorted = [...students].sort((a, b) => a.speak_count - b.speak_count);
+  // 按发言次数降序排列
+  const sorted = [...students].sort((a, b) => b.speak_count - a.speak_count);
   const maxCount = Math.max(...sorted.map(s => s.speak_count), 1);
 
-  // 计算百分位用于颜色映射
-  grid.innerHTML = sorted.map(s => {
-    const pct = maxCount > 0 ? s.speak_count / maxCount : 0;
-    const color = getHeatmapColor(pct);
-    const fontSize = 12 + (pct * 12); // 次数越多字体越大
+  // 奖牌映射
+  const medals = ['🥇', '🥈', '🥉'];
+
+  area.innerHTML = sorted.map((s, idx) => {
+    const rank = idx + 1;
+    const medal = medals[idx] || '';
+    const pct = maxCount > 0 ? (s.speak_count / maxCount * 100) : 0;
+    const barColor = s.speak_count > 0 ? '#4A90D9' : '#e0e0e0';
+    const isTop3 = rank <= 3;
     const isZero = s.speak_count === 0;
+
     return `
-      <div class="heatmap-block ${isZero ? 'heatmap-zero' : ''}"
-           style="background-color: ${color}; font-size: ${fontSize}px;"
-           title="${s.name} (${s.student_id}): ${s.speak_count}次">
-        ${s.name}<br><small>${s.speak_count}</small>
+      <div class="d-flex align-items-center px-3 py-2 border-bottom ${isTop3 ? 'bg-light' : ''}" style="gap: 10px;">
+        <span style="width: 28px; font-weight: 700; text-align: center;">${medal}${rank}</span>
+        <span style="width: 70px; font-weight: ${isTop3 ? 700 : 400}; ${isZero ? 'color:#aaa;' : ''}">
+          ${escapeHtml(s.name)}
+        </span>
+        <div style="flex:1; height: 22px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
+          <div style="height:100%; width:${pct}%; background:${barColor}; border-radius:4px; transition: width 0.3s;"></div>
+        </div>
+        <span style="width: 36px; text-align: right; font-weight: 700; ${isZero ? 'color:#ccc;' : 'color:#333;'}">
+          ${s.speak_count}
+        </span>
       </div>
     `;
   }).join('');
 }
 
-// ========== 热力图颜色映射（红→橙→黄→绿→蓝） ==========
-function getHeatmapColor(pct) {
-  // pct: 0.0(最少) → 1.0(最多)
-  // 红(0°) → 橙(30°) → 黄(60°) → 绿(120°) → 蓝(240°)
-  // 映射到 HSL：色相从 0 到 240
-  const hue = 240 - (pct * 240); // 0%发言→红(0°), 100%发言→蓝(240°)
-  return `hsl(${hue}, 70%, ${60 - pct * 20}%)`;
+// ========== 加载小组排行榜 ==========
+async function loadGroupRanking() {
+  try {
+    const resp = await fetch('speak_api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `action=getGroupRanking&class_id=${CLASS_ID}`
+    });
+    const data = await resp.json();
+    if (!data.success) return;
+    renderGroupRanking(data);
+  } catch (e) {
+    console.error('加载小组排行失败:', e);
+  }
+}
+
+// ========== 渲染小组排行榜（降序：发言多的组在前） ==========
+function renderGroupRanking(data) {
+  const area = document.getElementById('groupRankArea');
+
+  if (!data.groups || !data.groups.length) {
+    area.innerHTML = '<div class="text-center py-5 text-muted">暂无分组数据，请先在「智能分组」中完成分组</div>';
+    return;
+  }
+
+  const groups = data.groups;
+  const maxTotal = Math.max(...groups.map(g => parseInt(g.total_speaks)), 1);
+  const medals = ['🥇', '🥈', '🥉'];
+
+  area.innerHTML = groups.map((g, idx) => {
+    const rank = idx + 1;
+    const medal = medals[idx] || '';
+    const total = parseInt(g.total_speaks);
+    const pct = maxTotal > 0 ? (total / maxTotal * 100) : 0;
+    const barColor = total > 0 ? '#52C41A' : '#e0e0e0';
+    const isTop3 = rank <= 3;
+
+    return `
+      <div class="d-flex align-items-center px-3 py-2 border-bottom ${isTop3 ? 'bg-light' : ''}" style="gap: 10px;">
+        <span style="width: 28px; font-weight: 700; text-align: center;">${medal}${rank}</span>
+        <span style="width: 80px; font-weight: ${isTop3 ? 700 : 400};">
+          第${g.group_number}组
+        </span>
+        <div style="flex:1; height: 22px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
+          <div style="height:100%; width:${pct}%; background:${barColor}; border-radius:4px; transition: width 0.3s;"></div>
+        </div>
+        <span style="width: 30px; text-align: right; font-weight: 700; color:#333;">${total}</span>
+        <span style="width: 36px; text-align: right; font-size: 0.8rem; color: #888;">${g.member_count}人</span>
+      </div>
+    `;
+  }).join('');
+
+  // 底部小字
+  if (data.ungrouped_count > 0) {
+    area.innerHTML += `<div class="text-center text-muted small py-2">⚠️ 有 ${data.ungrouped_count} 名学生尚未分组</div>`;
+  }
 }
 
 // ========== 发言 +1 ==========
 async function speakIncrement(studentId) {
   const btn = document.getElementById('speak-btn-' + studentId);
-  // 闪光动画
   btn.classList.add('btn-speak-flash');
   setTimeout(() => btn.classList.remove('btn-speak-flash'), 400);
 
@@ -315,7 +380,8 @@ async function speakIncrement(studentId) {
     const data = await resp.json();
     if (data.success) {
       document.getElementById('count-' + studentId).textContent = data.count;
-      loadSpeakData(); // 刷新热力图和统计
+      loadSpeakData();     // 刷新学生排行榜和统计
+      loadGroupRanking();  // 同步刷新小组排行榜
     }
   } catch (e) {
     console.error('发言计数失败:', e);
@@ -335,6 +401,7 @@ async function speakDecrement(studentId) {
     if (data.success) {
       document.getElementById('count-' + studentId).textContent = data.count;
       loadSpeakData();
+      loadGroupRanking();
     }
   } catch (e) {
     console.error('撤销失败:', e);
@@ -402,6 +469,7 @@ function confirmReset() {
     if (data.success) {
       showToast('本周发言数据已清空', 'success');
       loadSpeakData();
+      loadGroupRanking();
     }
   });
 }

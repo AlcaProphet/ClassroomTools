@@ -243,6 +243,50 @@ try {
       ]);
       break;
 
+    // --- 获取小组排行榜（按组汇总发言总数，降序） ---
+    case 'getGroupRanking':
+      checkArchive($db, $classId);
+      $weekStart = getCurrentWeekStart();
+
+      // 查询最新分组结果中的小组及成员发言数据
+      $groups = $db->prepare("
+        SELECT gr.group_number, gr.id AS group_result_id,
+          COUNT(gm.id) AS member_count,
+          COALESCE(SUM(sr.count), 0) AS total_speaks
+        FROM groups_result gr
+        LEFT JOIN group_members gm ON gm.group_id = gr.id
+        LEFT JOIN students s ON s.id = gm.student_id
+        LEFT JOIN speaking_records sr ON sr.student_id = s.id
+          AND sr.class_id = gr.class_id
+          AND sr.week_start = ?
+          AND sr.is_archived = 0
+        WHERE gr.class_id = ?
+        GROUP BY gr.id, gr.group_number
+        ORDER BY total_speaks DESC, gr.group_number ASC
+      ");
+      $groups->execute([$weekStart, $classId]);
+      $groupList = $groups->fetchAll(PDO::FETCH_ASSOC);
+
+      // 统计未分组学生
+      $ungroupedCount = $db->prepare("
+        SELECT COUNT(*) FROM students s
+        WHERE s.class_id = ?
+          AND s.id NOT IN (
+            SELECT gm.student_id FROM group_members gm
+            JOIN groups_result gr ON gr.id = gm.group_id
+            WHERE gr.class_id = ?
+          )
+      ");
+      $ungroupedCount->execute([$classId, $classId]);
+
+      echo json_encode([
+        'success' => true,
+        'groups' => $groupList,
+        'ungrouped_count' => intval($ungroupedCount->fetchColumn()),
+        'week_start' => $weekStart
+      ]);
+      break;
+
     default:
       echo json_encode(['error' => '未知操作']);
   }
