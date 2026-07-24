@@ -43,3 +43,14 @@ npm-debug.log*
 # Temporary files
 *.tmp
 *.temp
+
+# SQLite database files (generated at runtime)
+data/*.db
+*.db
+
+# Bootstrap offline files (users download themselves)
+assets/bootstrap/bootstrap.min.css
+assets/bootstrap/bootstrap.bundle.min.js
+
+# PHP session files (if stored locally)
+sess_*

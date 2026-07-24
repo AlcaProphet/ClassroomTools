@@ -125,29 +125,72 @@
 git clone https://github.com/YOUR_USERNAME/ClassroomTools.git
 cd ClassroomTools
 
-# 2. 阅读设计文档（从这里开始！）
-# 打开 DesignGuide.md
+# 2. 下载 Bootstrap 离线文件（首次运行必需）
+curl -o assets/bootstrap/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css
+curl -o assets/bootstrap/bootstrap.bundle.min.js https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js
 
-# 3. 挑选任务，开始 Vibe Coding！
-# 浏览 Issues 页面，找 good first issue 标签
+# 3. 启动本地开发服务器
+php -S localhost:8888
+
+# 4. 打开浏览器访问
+# http://localhost:8888
 ```
+
+### 可用页面一览
+
+| 角色 | 页面 | 地址 |
+|------|------|------|
+| 🧑‍🏫 教师 | 首页 | `/index.php` |
+| 🧑‍🏫 教师 | 注册 | `/pages/teacher/register.php` |
+| 🧑‍🏫 教师 | 登录 | `/pages/teacher/login.php` |
+| 🧑‍🏫 教师 | 仪表盘 | `/pages/teacher/dashboard.php` |
+| 🧑‍🏫 教师 | 班级管理 | `/pages/teacher/classes.php` |
+| 🧑‍🏫 教师 | 发言管理 | `/pages/teacher/speak.php?class_id=1` |
+| 🧑‍🏫 教师 | 智能分组 | `/pages/teacher/group.php?class_id=1` |
+| 🎒 学生 | 入口 | `/pages/student/view.php?class=430602` |
 
 ---
 
-## 📁 项目结构（设计阶段）
+## 📁 项目结构
 
 ```
 ClassroomTools/
-├── DesignGuide.md          # 🎯 完整设计文档 — 所有开发的起点
-├── CONTRIBUTING.md         # 🤝 贡献指南 + Vibe Coding 实操教程
-├── README.md               # 📖 本文件
-├── LICENSE                 # ⚖️ MIT 开源协议
-└── .github/                # 🔧 Issue/PR 模板
-    ├── ISSUE_TEMPLATE/     #    Bug / 功能 / 文档 / 任务 四种模板
-    └── PULL_REQUEST_TEMPLATE.md
+├── 📄 index.php                  # 主入口（教师/学生双入口）
+├── 📁 assets/                    # 静态资源
+│   ├── bootstrap/                # Bootstrap 5 离线文件
+│   ├── css/style.css             # 自定义样式
+│   └── js/app.js                 # 前端工具函数（Toast/AJAX）
+├── 📁 db/
+│   └── init.php                  # SQLite 数据库初始化（7张表）
+├── 📁 includes/
+│   ├── config.php                # 全局配置 + 工具函数
+│   ├── header.php                # 公共头部（导航栏）
+│   └── footer.php                # 公共底部
+├── 📁 pages/
+│   ├── teacher/
+│   │   ├── login.php             # 教师登录
+│   │   ├── register.php          # 教师注册（首位管理员）
+│   │   ├── logout.php            # 登出
+│   │   ├── dashboard.php         # 仪表盘（统计+快捷入口）
+│   │   ├── classes.php           # 班级管理（创建/删除）
+│   │   ├── class_detail.php      # 班级详情（CSV导入名单）
+│   │   ├── speak.php             # 发言均衡热力图
+│   │   ├── speak_api.php         # 发言API（+1/-1/随机点名/归档）
+│   │   ├── group.php             # 智能分组页面
+│   │   └── group_api.php         # 分组API（分层轮询算法）
+│   └── student/
+│       └── view.php              # 学生只读视图
+├── 📁 data/                      # SQLite 数据库文件（自动生成）
+├── 📄 DesignGuide.md             # 🎯 完整设计文档
+├── 📄 BUILD_PLAN.md              # 🏗️ 分阶段构建计划
+├── 📄 AGENTS.md                  # 🤖 智能体工作规则
+├── 📄 CONTRIBUTING.md            # 🤝 贡献指南
+├── 📄 README.md                  # 📖 本文件
+├── 📄 LICENSE                    # ⚖️ MIT 协议
+└── 📁 .github/                   # 🔧 Issue/PR 模板
 ```
 
-> 💡 **当前阶段**：设计阶段。`DesignGuide.md` 是开发蓝图，目录结构将随开发推进逐步生长。
+> ✅ **当前阶段**：核心功能已完成。所有 7 个 Phase 均已实现，具备完整的教师端+学生端闭环。
 
 ---
 
