@@ -206,9 +206,13 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
                   </div>
                   <div class="d-flex gap-2">
+                    <!-- 发言管理 -->
+                    <a href="speak.php?class_id=<?php echo $class['id']; ?>" class="btn btn-outline-success btn-sm">
+                      🗣️ 发言
+                    </a>
                     <!-- 进入班级 -->
                     <a href="class_detail.php?id=<?php echo $class['id']; ?>" class="btn btn-outline-primary btn-sm">
-                      进入
+                      名单
                     </a>
                     <!-- 删除班级（模态框触发） -->
                     <button

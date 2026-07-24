@@ -97,13 +97,13 @@ require_once __DIR__ . '/../../includes/header.php';
     </a>
   </div>
   <div class="col-md-6">
-    <a href="../../index.php" class="text-decoration-none">
+    <a href="classes.php" class="text-decoration-none">
       <div class="card cursor-pointer h-100">
         <div class="card-body d-flex align-items-center gap-3">
           <div class="fs-1">🗣️</div>
           <div>
             <h6 class="mb-1">发言均衡</h6>
-            <small class="text-muted">Phase 4 即将实现</small>
+            <small class="text-muted">选择班级 → 开始课堂互动</small>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ require_once __DIR__ . '/../../includes/header.php';
           <div class="fs-1">📊</div>
           <div>
             <h6 class="mb-1">历史记录</h6>
-            <small class="text-muted">Phase 4 即将实现</small>
+            <small class="text-muted">在发言页面中查看</small>
           </div>
         </div>
       </div>
