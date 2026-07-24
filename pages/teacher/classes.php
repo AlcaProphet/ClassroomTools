@@ -43,16 +43,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $maxRetry--;
       }
 
-      // 写入数据库
-      $stmt = $db->prepare("INSERT INTO classes (teacher_id, class_code, class_name) VALUES (?, ?, ?)");
-      $stmt->execute([$teacherId, $code, $className]);
+      // 写入数据库（使用事务保证原子性）
+      $db->beginTransaction();
+      try {
+        $stmt = $db->prepare("INSERT INTO classes (teacher_id, class_code, class_name) VALUES (?, ?, ?)");
+        $stmt->execute([$teacherId, $code, $className]);
+        $classId = $db->lastInsertId();
 
-      // 同时初始化该班级的分组配置（默认参数）
-      $classId = $db->lastInsertId();
-      $db->prepare("INSERT INTO grouping_config (class_id) VALUES (?)")->execute([$classId]);
+        if ($classId <= 0) {
+          throw new Exception('班级创建失败');
+        }
 
-      $message = "班级「{$className}」创建成功！班级号：<strong>{$code}</strong>";
-      $messageType = 'success';
+        // 清理可能残留的孤儿配置记录（安全起见）
+        $db->prepare("DELETE FROM grouping_config WHERE class_id = ?")->execute([$classId]);
+        // 初始化该班级的分组配置
+        $db->prepare("INSERT INTO grouping_config (class_id) VALUES (?)")->execute([$classId]);
+
+        $db->commit();
+        $message = "班级「{$className}」创建成功！班级号：<strong>{$code}</strong>";
+        $messageType = 'success';
+      } catch (Exception $e) {
+        $db->rollBack();
+        $message = '创建失败：' . $e->getMessage();
+        $messageType = 'danger';
+      }
     }
   }
 
